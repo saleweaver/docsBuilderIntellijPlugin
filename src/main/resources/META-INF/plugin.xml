@@ -1,0 +1,32 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>org.datastic.docsBuilder</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Docs Creator</name>
+    <description><![CDATA[
+        A plugin that integrates ChatGPT to generate documentation directly within IntelliJ IDEA and other intellij IDEs.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <version>1.0.0</version>
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="michael@datastic.co">Datastic</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Documentation Creator"
+                    anchor="right"
+                    factoryClass="org.datastic.docsbuilder.ChatGPTToolWindowFactory"
+                    icon="com.intellij.icons.ExpUiIcons.Toolwindow.Documentation"/>
+        <!-- Settings Configurable -->
+        <applicationConfigurable instance="org.datastic.docsbuilder.SettingsConfigurable"
+                                 displayName="Documentation Creator Settings"
+                                 id="org.datastic.docsbuilder.SettingsConfigurable"/>
+    </extensions>
+</idea-plugin>
