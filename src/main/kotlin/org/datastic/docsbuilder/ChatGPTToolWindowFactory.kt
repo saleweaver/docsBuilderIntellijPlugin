@@ -30,7 +30,7 @@ import java.io.File
 
 class ChatGPTToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val contentFactory = ContentFactory.SERVICE.getInstance()
+        val contentFactory = ContentFactory.getInstance()
         val panel = JPanel(BorderLayout())
 
         // Initialize Editor for Syntax Highlighting
