@@ -1,0 +1,1 @@
+A plugin that integrates ChatGPT to generate documentation directly within IntelliJ IDEA and other intellij IDEs.
