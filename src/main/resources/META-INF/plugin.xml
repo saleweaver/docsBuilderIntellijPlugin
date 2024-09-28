@@ -10,7 +10,10 @@
         A plugin that integrates ChatGPT to generate documentation directly within IntelliJ IDEA and other intellij IDEs.
         The plugin can be configured to create inline docstrings, markdown files, and other documentation formats.
         You can set the level of documentation detail.
-    ]]></description>
+
+        In addition to the ability to create documentation for the complete file, an item will be added to the context menu to create documentation/explanation for the selected code only.
+
+       ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <version>1.5.0</version>
