@@ -22,6 +22,10 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.editor.colors.EditorColorsManager.DEFAULT_SCHEME_NAME
+import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
+import com.intellij.openapi.fileTypes.EditorHighlighterProvider
+import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
 import com.intellij.openapi.ui.putUserData
 import com.intellij.openapi.util.Key
 import com.intellij.ui.components.JBScrollPane
@@ -127,10 +131,13 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
         val editorFactory = EditorFactory.getInstance()
         val virtualFile = FileEditorManager.getInstance(project).selectedTextEditor?.virtualFile
 
-        val editor = editorFactory.createViewer(
+        val editor = editorFactory.createEditor(
             EditorFactory.getInstance().createDocument(""), // Empty document initially
             project,
+            virtualFile!!,
+            true
         )
+
         editor.settings.isLineNumbersShown = true // Optional: Show line numbers
         editor.settings.isFoldingOutlineShown = true // Optional: Show folding outlines
         editor.settings.isWhitespacesShown = true // Optional: Show whitespaces
