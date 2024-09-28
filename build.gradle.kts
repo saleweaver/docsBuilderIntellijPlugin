@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "org.datastic"
-version = "1.1-SNAPSHOT"
+version = "1.4-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -38,7 +38,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("242.*")
+        untilBuild.set("243.*")
     }
 
 

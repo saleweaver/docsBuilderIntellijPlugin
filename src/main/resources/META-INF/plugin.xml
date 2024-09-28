@@ -8,13 +8,18 @@
     <name>Docs Creator</name>
     <description><![CDATA[
         A plugin that integrates ChatGPT to generate documentation directly within IntelliJ IDEA and other intellij IDEs.
+        The plugin can be configured to create inline docstrings, markdown files, and other documentation formats.
+        You can set the level of documentation detail.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
-    <version>1.1.0</version>
+    <version>1.4.0</version>
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="michael@datastic.co">Datastic</vendor>
-
+    <change-notes>
+        - Max Tokens configurable
+        - Temperature configurable
+    </change-notes>
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->

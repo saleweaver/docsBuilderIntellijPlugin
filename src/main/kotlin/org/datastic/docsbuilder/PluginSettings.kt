@@ -19,7 +19,9 @@ class PluginSettings : PersistentStateComponent<PluginSettings.State> {
         var apiKey: String = "",
         var selectedModel: String = "gpt-4",
         var documentationType: DocumentationType = DocumentationType.DOCSTRINGS,
-        var detailedDocumentation: Boolean = false
+        var detailedDocumentation: Boolean = false,
+        var maxTokens: Int = 500,
+        var temperature: Double = 0.5
     )
 
     private var _state = State()

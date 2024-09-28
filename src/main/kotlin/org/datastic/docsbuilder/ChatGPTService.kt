@@ -109,8 +109,8 @@ object ChatGPTService {
         val json = JsonObject().apply {
             addProperty("model", selectedModel) // Use selected model
             add("messages", gson.toJsonTree(listOf(mapOf("role" to "user", "content" to prompt))))
-            addProperty("max_tokens", 500) // Adjust as needed
-            addProperty("temperature", 0.5) // Optional: Control randomness
+            addProperty("max_tokens", PluginSettings.instance.state.maxTokens) // Adjust as needed
+            addProperty("temperature", PluginSettings.instance.state.temperature) // Optional: Control randomness
         }
 
         val requestBody = json.toString().toRequestBody(mediaType)
