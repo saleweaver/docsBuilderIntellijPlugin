@@ -21,7 +21,7 @@
     <vendor email="michael@datastic.co">Datastic</vendor>
     <change-notes>
         - Added context menu item to create documentation for selected text in current editor,
-        - Max Tokens configurable, - Temperature configurable
+        - Max Tokens configurable, - Temperature configurable, - Syntax highlighting
     </change-notes>
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
