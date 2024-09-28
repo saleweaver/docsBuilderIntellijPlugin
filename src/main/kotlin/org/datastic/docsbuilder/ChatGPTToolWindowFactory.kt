@@ -22,6 +22,9 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.ui.putUserData
+import com.intellij.openapi.util.Key
+import com.intellij.ui.components.JBScrollPane
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.datatransfer.StringSelection
@@ -29,14 +32,21 @@ import java.awt.Toolkit
 import java.io.File
 
 class ChatGPTToolWindowFactory : ToolWindowFactory {
+    private var editor: Editor? = null // Make editor an instance variable for dynamic updates
+
+    companion object {
+        val EDITOR_KEY = Key.create<Editor>("ChatGPT.Editor")
+    }
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val contentFactory = ContentFactory.getInstance()
         val panel = JPanel(BorderLayout())
 
         // Initialize Editor for Syntax Highlighting
-        val editor = createEditor(project)
-        val editorScrollPane = JScrollPane(editor.component)
+        editor = createEditor(project)
+        val editorScrollPane = JBScrollPane(editor!!.component)
         panel.add(editorScrollPane, BorderLayout.CENTER)
+        panel.putUserData(EDITOR_KEY, editor)
 
         // Button Panel at the Top
         val buttonPanel = JPanel(BorderLayout())
@@ -61,7 +71,7 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
                     popupMenu.show(e.component, e.x, e.y)
                 } else {
                     // Default Action: Copy
-                    copyDocumentation(editor, project)
+                    copyDocumentation(editor!!, project)
                 }
             }
 
@@ -74,7 +84,7 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
 
         // Add Action Listeners for Menu Items
         copyItem.addActionListener {
-            copyDocumentation(editor, project)
+            copyDocumentation(editor!!, project)
         }
 
         // Initially, hide the Copy/Write Button unless DocumentationType is DOCSTRINGS or DETAILED_DOCSTRINGS
@@ -87,7 +97,7 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
 
         // Add Action Listener for Generate Button
         generateButton.addActionListener {
-            val generator = DocumentationGenerator(project, editor)
+            val generator = DocumentationGenerator(project, editor!!)
             generator.generateDocumentation()
             // After documentation is generated, decide to show the Copy/Write button
             val currentDocType = PluginSettings.instance.state.documentationType
@@ -117,10 +127,6 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
         val editorFactory = EditorFactory.getInstance()
         val virtualFile = FileEditorManager.getInstance(project).selectedTextEditor?.virtualFile
 
-        val fileType = virtualFile?.let {
-            FileTypeManager.getInstance().getFileTypeByFile(it)
-        } ?: FileTypeManager.getInstance().getFileTypeByExtension("txt") // Default to plain text
-
         val editor = editorFactory.createViewer(
             EditorFactory.getInstance().createDocument(""), // Empty document initially
             project,
@@ -132,6 +138,18 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
         return editor
     }
 
+    /**
+     * Updates the content of the editor with the provided text.
+     */
+    fun updateEditorContent(response: String) {
+        ApplicationManager.getApplication().invokeLater {
+            if (editor != null) {
+                ApplicationManager.getApplication().runWriteAction {
+                    editor?.document?.setText(response)
+                }
+            }
+        }
+    }
     /**
      * Copies the documentation from the editor to the clipboard.
      */

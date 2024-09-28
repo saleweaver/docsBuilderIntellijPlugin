@@ -13,12 +13,12 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="michael@datastic.co">Datastic</vendor>
     <change-notes>
-        - Max Tokens configurable
-        - Temperature configurable
+        - Added context menu item to create documentation for selected text in current editor,
+        - Max Tokens configurable, - Temperature configurable
     </change-notes>
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
@@ -34,4 +34,10 @@
                                  displayName="Documentation Creator Settings"
                                  id="org.datastic.docsbuilder.SettingsConfigurable"/>
     </extensions>
+
+    <actions>
+    <action icon="com.intellij.icons.ExpUiIcons.Actions.InSelection" id="MyContextMenuAction" class="org.datastic.docsbuilder.ContextMenuAction" text="Explain/Document Selection" description="Create documentation for the selected code.">
+        <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+</actions>
 </idea-plugin>

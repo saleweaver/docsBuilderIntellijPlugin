@@ -50,14 +50,13 @@ class DocumentationGenerator(private val project: Project, private val editor: E
                     }
 
                     // Generate documentation using ChatGPTService
-                    val documentation = ChatGPTService.generateDocumentation(prompt)
+                    val documentation = ChatGPTService.generateDocumentation(prompt).replace(Regex("^```.*$", RegexOption.MULTILINE), "").trim()
 
                     // Update the tool window's editor's document within a write command
                     ApplicationManager.getApplication().invokeLater {
                         WriteCommandAction.runWriteCommandAction(project) {
                             editor.document.setText(documentation)
                         }
-                        Messages.showInfoMessage(project, "Documentation generated successfully.", "Success")
                     }
                 } catch (e: Exception) {
                     // Handle exceptions and show an error dialog
