@@ -2,52 +2,49 @@
 
 package org.datastic.docsbuilder
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.EditorKind
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent
+import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.content.ContentFactory
-import javax.swing.JPanel
-import javax.swing.JButton
-import javax.swing.JScrollPane
-import javax.swing.JPopupMenu
-import javax.swing.JMenuItem
-import java.awt.BorderLayout
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.application.WriteAction
-import com.intellij.openapi.editor.colors.EditorColorsManager.DEFAULT_SCHEME_NAME
-import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
-import com.intellij.openapi.fileTypes.EditorHighlighterProvider
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
 import com.intellij.openapi.ui.putUserData
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.content.ContentFactory
+import java.awt.BorderLayout
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.datatransfer.StringSelection
-import java.awt.Toolkit
-import java.io.File
+import javax.swing.JButton
+import javax.swing.JMenuItem
+import javax.swing.JPanel
+import javax.swing.JPopupMenu
 
 class ChatGPTToolWindowFactory : ToolWindowFactory {
     private var editor: Editor? = null // Make editor an instance variable for dynamic updates
+    private var panel: JPanel = JPanel(BorderLayout())
+    private var tw: ToolWindow? = null
 
     companion object {
         val EDITOR_KEY = Key.create<Editor>("ChatGPT.Editor")
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        tw = toolWindow
         val contentFactory = ContentFactory.getInstance()
-        val panel = JPanel(BorderLayout())
 
+        setupFileEditorListener(project)
         // Initialize Editor for Syntax Highlighting
         editor = createEditor(project)
+
+
         val editorScrollPane = JBScrollPane(editor!!.component)
         panel.add(editorScrollPane, BorderLayout.CENTER)
         panel.putUserData(EDITOR_KEY, editor)
@@ -131,18 +128,52 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
         val editorFactory = EditorFactory.getInstance()
         val virtualFile = FileEditorManager.getInstance(project).selectedTextEditor?.virtualFile
 
-        val editor = editorFactory.createEditor(
-            EditorFactory.getInstance().createDocument(""), // Empty document initially
-            project,
-            virtualFile!!,
-            true
+        try {
+            val editor = editorFactory.createEditor(
+                EditorFactory.getInstance().createDocument(""), // Empty document initially
+                project,
+                virtualFile!!,
+                true
+            )
+            editor.settings.isLineNumbersShown = true // Optional: Show line numbers
+            editor.settings.isFoldingOutlineShown = true // Optional: Show folding outlines
+            editor.settings.isWhitespacesShown = true // Optional: Show whitespaces
+
+            return editor
+        } catch (e: NullPointerException) {
+            val editor = editorFactory.createViewer(
+                EditorFactory.getInstance().createDocument(""),
+                project,
+            )
+            editor.settings.isLineNumbersShown = true // Optional: Show line numbers
+            editor.settings.isFoldingOutlineShown = true // Optional: Show folding outlines
+            editor.settings.isWhitespacesShown = true // Optional: Show whitespaces
+
+            return editor
+        }
+    }
+
+        /**
+     * Sets up a listener to react when a file is opened in the IDE.
+     */
+    private fun setupFileEditorListener(project: Project) {
+        project.messageBus.connect().subscribe(
+            FileEditorManagerListener.FILE_EDITOR_MANAGER,
+            object : FileEditorManagerListener {
+                override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
+                    panel.removeAll()
+                    createToolWindowContent(project, tw!!)
+                }
+
+                override fun selectionChanged(event: FileEditorManagerEvent) {
+                    val selectedFile = event.newFile
+                    selectedFile?.let {
+                        panel.removeAll()
+                        createToolWindowContent(project, tw!!)
+                    }
+                }
+            }
         )
-
-        editor.settings.isLineNumbersShown = true // Optional: Show line numbers
-        editor.settings.isFoldingOutlineShown = true // Optional: Show folding outlines
-        editor.settings.isWhitespacesShown = true // Optional: Show whitespaces
-
-        return editor
     }
 
     /**
@@ -157,6 +188,7 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
             }
         }
     }
+
     /**
      * Copies the documentation from the editor to the clipboard.
      */
