@@ -31,6 +31,7 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
     private var editor: Editor? = null // Make editor an instance variable for dynamic updates
     private var panel: JPanel = JPanel(BorderLayout())
     private var tw: ToolWindow? = null
+    private var isSubscribed = false
 
     companion object {
         val EDITOR_KEY = Key.create<Editor>("ChatGPT.Editor")
@@ -40,7 +41,9 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
         tw = toolWindow
         val contentFactory = ContentFactory.getInstance()
 
-        setupFileEditorListener(project)
+        if (! isSubscribed) {
+            setupFileEditorListener(project)
+        }
         // Initialize Editor for Syntax Highlighting
         editor = createEditor(project)
 
@@ -174,6 +177,7 @@ class ChatGPTToolWindowFactory : ToolWindowFactory {
                 }
             }
         )
+            isSubscribed = true
     }
 
     /**
